@@ -1,0 +1,58 @@
+header h1{
+    padding: 10px 20px;
+}
+
+body {
+    
+  font-family: 'Pattaya', sans-serif!important;
+}
+.cart {
+  padding: 20px 50px;
+}
+.boxes {
+  margin-top: 20px;
+}
+
+.verify {
+  margin-top: 20px;
+}
+
+.submit {
+  margin-top:20px;
+  float: right;
+}
+
+.pagecheckout {
+  padding: 20px 50px;
+}
+.description {
+  font-size: 150%;
+  margin-top:50px;
+}
+
+.figure {
+
+}
+.rating-active:before {
+  content: "\2605";
+  position: absolute;
+  color: #ffc800;
+}
+.rating {
+ display: inline;
+ margin-left: 10px;
+ margin-top: 10px;
+}
+.rating > span {
+ display: inline-block;
+ position: relative;
+ width: 1.1em;
+}
+
+.pichS{
+  padding: .25rem;
+    background-color: #fff;
+    border-radius: .25rem;
+    width: 350px!important;
+    height: auto;
+}

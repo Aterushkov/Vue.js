@@ -1,0 +1,380 @@
+<html>
+
+<head>
+  <title>Чернокотовая теплота</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Pattaya&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
+  <link href="css/fontawesome/css/all.css" rel="stylesheet">
+  <meta charset="UTF-8">
+</head>
+<body>
+ <div id="app">
+  <header>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 shadow-sm">
+                <div class="navbar d-flex justify-content-center">
+                    <div class="col-2">
+                        <nav class="navbar navbar-light">
+                            <a class="navbar-brand " href="http://sopr.icu/">
+                              <img :src="logo" width="100" height="100" alt="">
+                            </a>
+                          </nav>
+                    </div>
+                        <div class="navbar-header col-8 ">
+                            <h1 class="text-center" v-text="sitename"></h1>
+                            <p class="text-center" v-text="sitediscription"></p>
+                        </div>
+                          <div class="navbar navbar-light col-2">
+                              <button type="button" 
+                              @click="showCheckout"
+                              class="btn btn-outline-secondary d-flex flex-nowrap bg-light  align-items-baseline">
+                                  <i class="fa fa-shopping-cart pr-2" aria-hidden="true"></i>
+                                  <span class=" pr-2">{{ cartItemCount }}</span> 
+                                  <span class="">Checkout</span> 
+                                </button>
+                          </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </header>
+  <main>
+      <div class="container">
+        <!-- Добавлен для перебора -->
+          <div v-if="showProduct">
+             <div v-for="product in sortedProducts">
+                <div class="row shadow p-3">
+                    <div class="col-6 d-flex justify-content-center">
+                        <figure >
+                            <img class="figure-img img-fluid pichS" v-bind:src="product.image">
+                        </figure>
+                    </div>
+                        <div class="col-md-6 col-md-offset-2 description">
+                            <h1 v-text="product.title"></h1>
+                                <p v-html="product.description"></p>
+                                <div class=" d-flex justify-content-start align-items-baseline">
+                                    <p class="price">
+                                         {{product.price | formatPrice}}
+                                    </p>
+                                    <button type="button" 
+                                    v-on:click="addToCart(product)" 
+                                    
+                                    v-if="canAddToCart(product)"
+                                    class="ml-4 btn btn-outline-success  px-4">Купить</button>
+                                    <button type="button" 
+                                    v-else
+                                    class="ml-4 btn btn-outline-danger disabled  px-4"> <strike>Купить</strike></button>
+                                    <p class="pl-4 " style="font-size: 20px;"
+                                    v-if="product.availableInventory - cartCount(product.id) === 0">Простите, все раскупили...</p>
+                                    <p class="pl-4 " style="font-size: 20px;"
+                                    v-else-if="product.availableInventory - cartCount(product.id) < 5">Осталось всего {{product.availableInventory - cartCount(product.id)}}</p>
+                                    <p class="pl-4 " style="font-size: 20px;"
+                                    v-else>Порадуйте своего питомца!</p>
+                                        
+                                    </div>
+                                    <div class="rating ">
+                                      <span v-bind:class="{'rating-active' :checkRating(n, product)}" v-for="n in 5">☆
+                                      </span>
+                                    </div>
+                        </div>
+                    </div>
+                    <hr />
+             </div>
+          </div>
+        <div v-else>
+          <!-- Добавлен для перебора -->
+          <div class="row">
+              <div class="row d-flex justify-content-center pt-3 shadow">
+                  <div class="col-12 d-flex justify-content-center shadow-sm">
+                      <div class="col-12 d-flex justify-content-center p-4">
+                          <table class="table table-bordered">
+                              <thead>
+                                  <tr>
+                                      <td colspan="4" class="h3 text-center">Список товаров</td>
+                                    </tr>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">First</th>
+                                  <th scope="col">Last</th>
+                                  <th scope="col">Handle</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th scope="row">1</th>
+                                  <td>Mark</td>
+                                  <td>Otto</td>
+                                  <td>@mdo</td>
+                                </tr>
+                                <tr>
+                                  <th scope="row">2</th>
+                                  <td>Jacob</td>
+                                  <td>Thornton</td>
+                                  <td>@fat</td>
+                                </tr>
+                                <tr>
+                                  <th scope="row">3</th>
+                                  <td  style="color:#28a745;" colspan="2" v-if="order.giftSend">Ваш заказ будет отправлен в подарочной упаковке {{order.bowSelect}}{{order.packSelect}}</td>
+                                  <td colspan="2"  v-else="order.giftSend">Ваш заказ будет отправлен в обычной упаковке</td>
+                                  <td>@twitter</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                      </div>
+                  </div>
+                    <div class="col-12 d-flex justify-content-center">
+                        <form class="col-12 p-3  ">
+                            <div class="d-flex">
+                            <div class="form-group col-6">
+                              <label>Фамилия</label>
+                              <input type="text" class="form-control" placeholder="Введите вашу фамилию" v-model.trim="order.firstName">
+                            </div>
+                            <div class="form-group col-6">
+                              <label>Имя</label>
+                              <input type="text" class="form-control" placeholder="Введите ваше имя" v-model.trim="order.lastName">
+                              <small class="form-text text-muted">Нам очень приятно с Вами познакомиться</small>
+                            </div>
+                          </div>
+                          <div class="d-flex">
+                              <div class="form-group col-6">
+                                <label>Номер телефона</label>
+                                <input type="text" class="form-control" placeholder="Введите ваш номер телефона" v-model.number="order.phone">
+                              </div>
+                              <div class="form-group col-6">
+                                <label>Ваша почта</label>
+                                <input type="text" class="form-control" placeholder="Введите ваш e-mail адресс" v-model.trim="order.mail">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="checkboxmail" v-model="order.mailValYes">
+                                    <label class="form-check-label" for="checkboxmail" >Хочу получать инфомарцию о акциях на почту</label>
+                                  </div>
+                              </div>
+                            </div>
+                          <div class="d-flex">
+                              <div class="form-group col-4">
+                                <label>Город</label>
+                                <input type="text" class="form-control" placeholder="Ваш город" v-model.trim="order.city">
+                              </div>
+                              <div class="form-group col-4">
+                                <label>Улица</label>
+                                <input type="text" class="form-control" placeholder="Ваша улица" v-model.trim="order.street">
+                              </div>
+                              <div class="form-group col-2">
+                                  <label>Дом</label>
+                                  <input type="text" class="form-control" placeholder="Номер дома" v-model.number="order.house">
+                                </div>
+                                <div class="form-group col-2">
+                                    <label>Квартира</label>
+                                    <input type="text" class="form-control" placeholder="Номер квартиры" v-model.number="order.room">
+                                  </div>
+                            </div>
+                            <div>
+                                <div class=" text-center form-group form-check col-12">
+                                    <label class="form-check-label" > Если вы хотите, мы можем отправить Ваши заказы упоковав их в праздничную упаковку</label><br>
+                                    <input type="checkbox" 
+                                    class="form-check-input" 
+                                    id="giftSend" 
+                                    v-model="order.giftSend"
+                                    >
+                                    <label class="form-check-label" for="checkboxgift" >Я хочу отправить мои заказы подарком</label>
+                                </div>
+                                <div class="text-center form-group form-check col-12" v-if="order.giftSend">
+                                  <div class=" d-flex text-center form-group form-check col-12 align-items-baseline">
+                                      <div class="pr-4 d-flex align-items-baseline">
+                                          <div>
+                                            <input type="checkbox" class="form-check-input"  id="checkboxbow" v-model="order.imposeBow">
+                                            <label class="form-check-label pr-2" for="checkboxbow" >Украсить бантиком</label>
+                                          </div>
+                                          <div class="form-group " v-if="order.imposeBow">
+                                              <select class="form-control" id="bowSelect" v-model="order.bowSelect">
+                                                <option disabled value="Бантик">Бантик</option>
+                                                <option v-for="(item) in bowSelect"
+                                                        v-bind:value="item">{{item}}</option>
+                                              </select>
+                                          </div>
+                                          <div v-else="order.imposeBow">
+                                            
+                                          </div>
+                                         </div>
+                                         <div class="pr-4 d-flex align-items-baseline">
+                                          <div >
+                                              <input type="checkbox" class="form-check-input"  id="checkboxpack" v-model="order.giftPack">
+                                              <label class="form-check-label pr-2" for="checkboxpack" >Завернуть в упаковку</label>
+                                            </div>
+                                            <div class="form-group" v-if="order.giftPack">
+                                                <select class="form-control" id="bowSelect" v-model="order.packSelect">
+                                                    <option disabled value="Упаковка">Упаковка</option>
+                                                    <option v-for="(item) in packSelect"
+                                                        v-bind:value="item">{{item}}</option>
+                                                </select>
+                                            </div>
+                                            <div v-else="order.giftPack">
+                                              
+                                            </div>
+          
+                                        </div>
+                                        <div class="pr-4 d-flex align-items-baseline">
+                                            <div >
+                                                <input type="checkbox" class="form-check-input"  id="checkboxcard" v-model="order.giftCard">
+                                                <label class="form-check-label pr-2" for="checkboxcard" >Прикрепить открытку с подздравлением</label>
+                                              </div>
+          
+                                          </div>
+                                  </div>
+                                  <div>
+                                      <div class="form-group col-12 text-left" v-if="order.giftCard" >
+                                          <label>Что нам написать в открытке?</label>
+                                          <input type="text" class="form-control" placeholder="Ваше пожелание мы напишем красивым, ровным потчерком" v-model="order.giftCardSend">
+                                        </div>
+                                        <div class="form-group col-12" v-else="order.giftCard">
+                                          
+                                          </div>
+                                  </div>
+                              </div>
+                                <div class=" text-center form-group form-check col-12" v-else="order.giftSend">
+  
+                                </div>
+                               
+                            </div>
+                            <div class=" text-center form-group form-check">
+                              <input type="checkbox" class="form-check-input" id="checkboxyes" v-model="checked">
+                              <label class="form-check-label" for="checkboxyes" >Поставив галочку вы соглашаетесь с условиями покупки</label>
+                            </div>
+                            <p class="d-flex justify-content-center">
+                              <button type="submit" @click="subminForm" v-if="checked" class="btn btn-outline-success shadow " verify> Совершить покупку</button>
+                              <button type="submit" v-else="checked" @click.prevent class="btn btn-outline-danger disabled" verify> Совершить покупку</button>
+                            </p>
+                          </form>
+                    </div>
+                  </div>
+            </div>
+          </div>
+        </div>
+   </main>
+   <footer>
+      <div class="container">
+          <div class="row">
+              <div class="col-12 shadow-sm">
+                  <div class="navbar d-flex justify-content-center">
+                          <div class="navbar-header col-12 text-center">
+                              <span>Тут будет подвал!</span>
+                          </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </footer>
+  </div> 
+</body>
+
+<script type="text/javascript">
+  var webstore = new Vue({
+    el: '#app',
+    data: {
+      showProduct: true,
+      a: false,
+      order:{
+        firstName: '',
+        lastName: '',
+        city:'',
+        street: '',
+        house: '',
+        room: '',
+        phone: '',
+        mail: '',
+        mailValYes: false,
+        giftSend:false,
+        imposeBow: false,
+        giftPack:false,
+        giftCard: false,
+        giftCardSend: '',
+      },
+      bowSelect: {
+          blue:' Синим',
+          green:' Зелены',
+          red:' Красным',
+          xmass:' Новогодним',
+          whiteInРeas:' Белым в горошек',
+        },
+        packSelect: {
+          blue:' Синюю',
+          green:' Зеленюю',
+          red:' Краснюю',
+          xmass:' Новогоднюю',
+          whiteInРeas:' Белую в горошек',
+        },
+      checked: false,
+      sitename: "Чернокотовая теплота",
+      sitediscription: "Сайт для мохнатых, теплых животиков",
+      logo:"images/logo.png",
+      products:{},
+      cart:[]
+    },
+    methods: {
+        checkRating(n, myProduct) {
+          return myProduct.rating - n >= 0;
+        },
+        addToCart(aProduct) {
+          this.cart.push(aProduct.id);
+        },
+        showCheckout() {
+          this.showProduct = this.showProduct ? false : true;
+        },
+        submitForm() {
+          alert('Submitted');
+        },
+        canAddToCart(aProduct) {
+          //return this.product.availableInventory > this.cartItemCount;
+          return aProduct.availableInventory > this.cartCount(aProduct.id);
+        },
+        cartCount(id) {
+          let count = 0;
+          for (var i = 0; i < this.cart.length; i++) {
+            if (this.cart[i] === id) {
+              count++;
+            }
+          }
+          return count;
+        }
+      },
+      computed: {
+        cartItemCount() {
+          return this.cart.length || '';
+        },
+        sortedProducts() {
+          if (this.products.length > 0) {
+            let productsArray = this.products.slice(0);
+            console.log(productsArray);
+            console.log(this.products);
+            function compare(a, b) {
+              if (a.title.toLowerCase() < b.title.toLowerCase())
+                return -1;
+              if (a.title.toLowerCase() > b.title.toLowerCase())
+                return 1;
+              return 0;
+            }
+            return productsArray.sort(compare);
+          }
+        }
+      },
+    filters:{
+      formatPrice(price) {	
+          return "₽" +" "+ price;	
+      }
+    },	
+    created: function () {	//#C
+        axios.get('./products.json')
+          .then((response) => {
+            this.products = response.data.products;
+            console.log(this.products);
+          });
+      },
+});
+</script>
+</body>
+
+</html>

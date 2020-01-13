@@ -1,0 +1,59 @@
+{
+    "products": [
+        {
+            "id": 1001,
+            "title": "Котячья еда, 25 килограмм мешок",
+            "description": "25 килограмм с  <em>неотразимым</em>, органическим кормом для вашей кошки",
+            "price": 2000,
+            "image": "static/images/product-fullsize.png",
+            "availableInventory":10,  
+            "rating": 3
+          },
+          {
+            "id": 1002,
+            "title": "Собачовая еда, 25 килограмм мешок",
+            "description": "25 килограмм с  <em>великолепным</em>, органическим кормом для вашего песеля",
+            "price": 2000,
+            "image": "static/images/dogfood.jpg",
+            "availableInventory":10,  
+            "rating": 4
+          },
+          {
+            "id": 1003,
+            "title": "Картина \"Котенок и щенок\"",
+            "description": "Великолепная картина для вашего интерьера",
+            "price": 2000,
+            "image": "static/images/Pcatanddog.jpg",
+            "availableInventory":10,  
+            "rating": 2
+          },
+          {
+            "id": 1004,
+            "title": "Картина \"Портрет пса\"",
+            "description": "Великолепная картина для вашего интерьера",
+            "price": 2000,
+            "image": "static/images//Pdog.png",
+            "availableInventory":10,  
+            "rating": 3
+          },
+          {
+            "id": 1005,
+            "title": "Картина \"Портрет пса ретро\"",
+            "description": "Великолепная картина для вашего интерьера",
+            "price": 2000,
+            "image": "static/images/pd0g3.jpg",
+            "availableInventory":10,  
+            "rating": 3
+          },
+          {
+            "id": 1006,
+            "title": "Картина \"Пёсель\"",
+            "description": "Великолепная картина для вашего интерьера",
+            "price": 2000,
+            "image": "static/images/pdog4.jpg",
+            "availableInventory":10,  
+            "rating": 3
+          }
+          
+    ]
+}
